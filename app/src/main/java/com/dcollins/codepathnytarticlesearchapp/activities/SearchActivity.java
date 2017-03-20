@@ -12,6 +12,7 @@ import android.widget.GridView;
 
 import com.dcollins.codepathnytarticlesearchapp.Article;
 import com.dcollins.codepathnytarticlesearchapp.ArticleArrayAdapter;
+import com.dcollins.codepathnytarticlesearchapp.EndlessScrollListener;
 import com.dcollins.codepathnytarticlesearchapp.R;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -63,6 +64,18 @@ public class SearchActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
+
+        // Attach the listener to the AdapterView onCreate
+        gvResults.setOnScrollListener(new EndlessScrollListener() {
+            @Override
+            public boolean onLoadMore(int page, int totalItemsCount) {
+                // Triggered only when new data needs to be appended to the list
+                // Add whatever code is needed to append new items to your AdapterView
+                loadNextDataFromApi(page);
+                // or loadNextDataFromApi(totalItemsCount);
+                return true; // ONLY if more data is actually being loaded; false otherwise.
+            }
+        });
     }
 
     public void onArticleSearch(View view) {
@@ -87,6 +100,35 @@ public class SearchActivity extends AppCompatActivity {
                     /*articles.addAll(Article.fromJSONArray(articleJsonResults));
                     adapter.notifyDataSetChanged();*/
                     // This replaces the above 2 lines
+                    adapter.clear(); // Clear out the previous search results
+                    adapter.addAll(Article.fromJSONArray(articleJsonResults));
+                    Log.d("DEBUG", articles.toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    public void loadNextDataFromApi(int offset) {
+        String query = etQuery.getText().toString();
+
+        //Toast.makeText(this, "Searching for " + query, Toast.LENGTH_LONG).show();
+        AsyncHttpClient client = new AsyncHttpClient();
+        String url = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
+
+        RequestParams params = new RequestParams();
+        params.put("api-key", "dd1cd48f5049425a9d87d7720f87beb7");
+        params.put("page", offset);
+        params.put("q", query);
+
+        client.get(url, params, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Log.d("DEBUG", response.toString());
+                JSONArray articleJsonResults = null;
+                try {
+                    articleJsonResults = response.getJSONObject("response").getJSONArray("docs");
                     adapter.addAll(Article.fromJSONArray(articleJsonResults));
                     Log.d("DEBUG", articles.toString());
                 } catch (JSONException e) {
