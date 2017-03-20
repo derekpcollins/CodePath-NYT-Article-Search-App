@@ -1,4 +1,4 @@
-# Project 2 - *Name of App Here*
+# Project 2 - *CodePath NYT Article Search App*
 
 **CodePath NYT Article Search App** is an android app that allows a user to search for articles on web using simple filters. The app utilizes [New York Times Search API](http://developer.nytimes.com/docs/read/article_search_api_v2).
 
