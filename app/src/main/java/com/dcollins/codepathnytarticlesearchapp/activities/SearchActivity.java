@@ -1,13 +1,18 @@
-package com.dcollins.codepathnytarticlesearchapp;
+package com.dcollins.codepathnytarticlesearchapp.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 
+import com.dcollins.codepathnytarticlesearchapp.Article;
+import com.dcollins.codepathnytarticlesearchapp.ArticleArrayAdapter;
+import com.dcollins.codepathnytarticlesearchapp.R;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -43,6 +48,21 @@ public class SearchActivity extends AppCompatActivity {
         articles = new ArrayList<>();
         adapter = new ArticleArrayAdapter(this, articles);
         gvResults.setAdapter(adapter);
+
+        // Hook up listener for grid click
+        gvResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Create an intent to display the article
+                Intent i = new Intent(getApplicationContext(), ArticleActivity.class);
+                // Get the article display
+                Article article = articles.get(position);
+                // Pass in the article into the intent
+                i.putExtra("article", article);
+                // Launch the activity
+                startActivity(i);
+            }
+        });
     }
 
     public void onArticleSearch(View view) {
