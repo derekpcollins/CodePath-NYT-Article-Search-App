@@ -97,11 +97,9 @@ public class SearchActivity extends AppCompatActivity {
                 JSONArray articleJsonResults = null;
                 try {
                     articleJsonResults = response.getJSONObject("response").getJSONArray("docs");
-                    /*articles.addAll(Article.fromJSONArray(articleJsonResults));
-                    adapter.notifyDataSetChanged();*/
-                    // This replaces the above 2 lines
                     adapter.clear(); // Clear out the previous search results
                     adapter.addAll(Article.fromJSONArray(articleJsonResults));
+                    gvResults.smoothScrollToPosition(0); // Scroll back to the top of the search results gridview
                     Log.d("DEBUG", articles.toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
